@@ -1,0 +1,19 @@
+{
+  "name": "pcat",
+  "version": "1.0.0",
+  "description": "App",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doctormaster1/PCAT.git"
+  },
+  "author": "Ahmet Esad Barut",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/doctormaster1/PCAT/issues"
+  },
+  "homepage": "https://github.com/doctormaster1/PCAT#readme"
+}
