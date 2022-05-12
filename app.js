@@ -1,58 +1,61 @@
 import express from "express";
 import mongoose from "mongoose";
-import ejs from "ejs";
-import path from "path";
-import { fileURLToPath } from "url";
-import Photo from "./models/Photo";
+import fileUpload from "express-fileupload";
+import methodOverride from "method-override";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import {
+  getAllPhotos,
+  getPhoto,
+  createPhoto,
+  updatePhoto,
+  deletePhoto,
+} from "./controllers/photoControllers";
+import {
+  getAboutPage,
+  getAddPage,
+  getEditPage,
+} from "./controllers/pageControllers";
 
 const app = express();
 
+// DB Connect
 mongoose.connect("mongodb://localhost/pcat-test-db", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
+// Logger middleware
 const myLogger = (req, res, next) => {
-  console.log("Middleware log: " + req.url.split());
+  console.log("Log: " + req.url.split());
   next();
 };
 
+// Template Engine
 app.set("view engine", "ejs");
 
+// Middlewares
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(fileUpload());
+app.use(
+  methodOverride("_method", {
+    methods: ["POST", "GET"],
+  })
+);
 app.use(myLogger);
 
-app.get("/", async (req, res) => {
-  const photos = await Photo.find({});
-  res.render("index", { photos });
-});
+// Photo Route
+app.get("/", getAllPhotos);
+app.get("/photos/:id", getPhoto);
+app.post("/photos", createPhoto);
+app.put("/photos/:id", updatePhoto);
+app.delete("/photos/:id", deletePhoto);
 
-app.get("/photos/:id", async (req, res) => {
-  const photo = await Photo.findById(req.params.id);
-  res.render("photo", { photo });
-});
-
-app.get("/about", (req, res) => {
-  res.render("about");
-});
-
-app.get("/add", (req, res) => {
-  res.render("add");
-});
-
-app.post("/photos", async (req, res) => {
-  await Photo.create(req.body);
-  res.redirect("/");
-});
-
-app.get("/video-page", (req, res) => {
-  res.render("photo");
-});
+// Page Route
+app.get("/about", getAboutPage);
+app.get("/add", getAddPage);
+app.get("/photos/edit/:id", getEditPage);
 
 const port = 3000;
 app.listen(port, () => {
